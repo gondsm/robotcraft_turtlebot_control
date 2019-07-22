@@ -32,11 +32,13 @@ public:
         ros::Rate loop_rate(10);
         while (ros::ok())
         {
+            // Calculate the command to apply
             auto msg = calculateCommand();
 
+            // Publish the new command
             this->cmd_vel_pub.publish(msg);
-            ros::spinOnce();
 
+            // And throttle the loop
             loop_rate.sleep();
         }
     }
