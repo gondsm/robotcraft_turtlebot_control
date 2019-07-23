@@ -10,11 +10,14 @@ class TurtleController
 private:
     ros::Publisher cmd_vel_pub;
 
+    float lin_speed;
+    float ang_speed;
+
     geometry_msgs::Twist calculateCommand()
     {
         auto msg = geometry_msgs::Twist();
-        msg.linear.x = 1.0;
-        msg.angular.z = 1.0;
+        msg.linear.x = this->lin_speed;
+        msg.angular.z = this->ang_speed;
         return msg;
     }
 
@@ -22,6 +25,11 @@ public:
     TurtleController(){
         // Initialize ROS
         ros::NodeHandle n;
+        ros::NodeHandle nh("~");
+
+        // Read private params
+        nh.param<float>("linear_speed", this->lin_speed, 1.0);
+        nh.param<float>("angular_speed", this->ang_speed, 1.0);
 
         // Create a publisher object, able to push messages
         this->cmd_vel_pub = n.advertise<geometry_msgs::Twist>("cmd_vel", 1000);

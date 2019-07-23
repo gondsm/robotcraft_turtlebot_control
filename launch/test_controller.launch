@@ -4,6 +4,8 @@
 
 	<node pkg="turtlebot_control" type="basic_controller" name="controller" output="screen">
 		<remap from="cmd_vel" to="turtle1/cmd_vel"/>
+		<param name="linear_speed" value="5.0"/>
+		<param name="angular_speed" value="5.0"/>
 	</node>
 
 </launch>
