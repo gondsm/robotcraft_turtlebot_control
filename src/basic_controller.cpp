@@ -4,11 +4,14 @@
 #include "std_msgs/String.h"
 #include "geometry_msgs/Twist.h"
 #include "std_srvs/Empty.h"
+#include "turtlesim/Spawn.h"
 
 
 class TurtleController
 {
 private:
+    // The current nodehandle
+    ros::NodeHandle n;
     // A publisher to publish messages
     ros::Publisher cmd_vel_pub;
     // A service server to stop and start the robot
@@ -18,6 +21,8 @@ private:
     float ang_speed;
     // Tells us whether the turtle is moving
     bool is_running;
+    // The name of the turtle we're controlling
+    std::string turtle_name;
 
     geometry_msgs::Twist calculateCommand()
     {
@@ -47,10 +52,23 @@ private:
         return true;
     }
 
+    void spawn_turtle()
+    {
+        // Create a service client real quick
+        ros::ServiceClient client = n.serviceClient<turtlesim::Spawn>("spawn");
+
+        // Call the service
+        turtlesim::Spawn srv;
+        srv.request.x = 2.0;
+        srv.request.y = 2.0;
+        srv.request.name = this->turtle_name;
+        client.call(srv);
+    }
+
 public:
     TurtleController(){
         // Initialize ROS
-        ros::NodeHandle n;
+        this->n = ros::NodeHandle();
         ros::NodeHandle nh("~");
 
         // We're running by default
@@ -59,6 +77,12 @@ public:
         // Read private params
         nh.param<float>("linear_speed", this->lin_speed, 1.0);
         nh.param<float>("angular_speed", this->ang_speed, 1.0);
+        nh.param<std::string>("spawn_turtle_name", this->turtle_name, "");
+
+        if (this->turtle_name.length() > 1)
+            // Give turtlesim a few seconds to wake up
+            ros::Duration(5).sleep();
+            this->spawn_turtle();
 
         // Create a publisher object, able to push messages
         this->cmd_vel_pub = n.advertise<geometry_msgs::Twist>("cmd_vel", 1000);
