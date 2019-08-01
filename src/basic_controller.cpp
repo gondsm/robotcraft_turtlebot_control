@@ -80,9 +80,11 @@ public:
         nh.param<std::string>("spawn_turtle_name", this->turtle_name, "");
 
         if (this->turtle_name.length() > 1)
+        {
             // Give turtlesim a few seconds to wake up
             ros::Duration(5).sleep();
             this->spawn_turtle();
+        }
 
         // Create a publisher object, able to push messages
         this->cmd_vel_pub = n.advertise<geometry_msgs::Twist>("cmd_vel", 1000);
