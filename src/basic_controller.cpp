@@ -79,16 +79,17 @@ public:
         nh.param<float>("angular_speed", this->ang_speed, 1.0);
         nh.param<std::string>("spawn_turtle_name", this->turtle_name, "");
 
-        if (this->turtle_name.length() > 1)
+        if (this->turtle_name.length() > 1){
             // Give turtlesim a few seconds to wake up
             ros::Duration(5).sleep();
             this->spawn_turtle();
+        }
 
         // Create a publisher object, able to push messages
         this->cmd_vel_pub = n.advertise<geometry_msgs::Twist>("cmd_vel", 1000);
 
         // Create a service handler for stopping and re-starting the robot
-        this->stop_service = n.advertiseService("stop_turtle", &TurtleController::flip_state, this);
+        this->stop_service = nh.advertiseService("stop_turtle", &TurtleController::flip_state, this);
     }
 
     void run(){
